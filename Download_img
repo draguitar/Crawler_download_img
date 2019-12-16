@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec 16 09:39:31 2019
+
+@author: C09700
+"""
+
+# %%
+import requests
+#PATH = 'https://news.ltn.com.tw/news/politics/breakingnews/3010288'
+PATH = 'https://www.ptt.cc/bbs/Beauty/M.1576459462.A.59E.html'
+
+payload = {
+        'form':'/bbs/Beauty/M.1576459462.A.59E.html',
+        'yes':'yes'        
+        }
+rs = requests.session()
+res = rs.post('https://www.ptt.cc/ask/over18',verify = False, data = payload)
+res = rs.get(PATH, verify=False)
+
+
+#res = requests.get(PATH)
+print(res.text)
+# %%
+from bs4 import BeautifulSoup
+from urllib.request import urlretrieve
+
+soup = BeautifulSoup(res.text,'lxml')
+# %%
+imgs = soup.find_all("img")
+for idx, i in enumerate(imgs) :
+    filename = i.get('title')
+    if filename:
+        urlretrieve(i.get('src'), '{}{}{}'.format('./download/', idx, '.jpg')    )
+ 
+# %%
+href = soup.find_all("a")
+
+for idx, p in enumerate(href) :
+    try:
+        urlretrieve(p.text, '{}{}{}'.format('./download/', idx, '.jpg'))
+    except:
+        print(p.text, end=', ')
